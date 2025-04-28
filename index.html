@@ -107,6 +107,34 @@
         transform: translateY(0);
       }
     }
+
+
+
+
+@keyframes spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.video-container {
+  position: relative;
+  min-height: 400px;
+}
+
+.video-item {
+        opacity: 0;
+        transform: scale(0) rotate(720deg);
+        transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+.video-visible .video-item {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Add this to hide videos initially */
+#video-section .row {
+  position: relative;
+}
   </style>
 </head>
 <body>
@@ -280,12 +308,14 @@
   </div>
 </section>
 
-<section class="section bg-light">
+<!-- Modify the video section like this -->
+<section class="section bg-light" id="video-section">
   <div class="container">
     <h3 class="mb-5 reveal-text" style="text-align: center;">Watch Our Videos</h3>
     <div class="row g-4">
+      <div class="video-loader"></div>
       
-      <div class="col-md-6">
+      <div class="col-md-6 video-item">
         <div class="ratio ratio-16x9" style="border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
           <video src="https://firebasestorage.googleapis.com/v0/b/knourneighb.appspot.com/o/Gaza%2F265884691114_status_ae66ed4606c642e2a91588a7f4990b7a.mp4?alt=media&token=3c87d6d7-bc7c-4d4a-bb76-1dede3acf31c" 
                  controls 
@@ -293,8 +323,7 @@
         </div>
         <h5 class="mt-3 reveal-text text-center">Highlight: Young Couple - Raggae vibes</h5>
       </div>
-      
-      <div class="col-md-6">
+      <div class="col-md-6 video-item">
         <div class="ratio ratio-16x9" style="border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
           <video src="https://firebasestorage.googleapis.com/v0/b/knourneighb.appspot.com/o/Gaza%2F265982820212_status_47060498316941739bd971da2bf9b193.mp4?alt=media&token=3362e495-0d6d-49f3-b6c4-9db7da15d753" 
                  controls 
@@ -303,7 +332,7 @@
         <h5 class="mt-3 reveal-text text-center">Behind the Scenes: Urban Drive Program Clip</h5>
       </div>
 
-      <div class="col-md-6">
+      <div class="col-md-6 video-item">
         <div class="ratio ratio-16x9" style="border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
           <video src="https://firebasestorage.googleapis.com/v0/b/knourneighb.appspot.com/o/Gaza%2F265887247458_status_608b77aac0be414dafa4e02dd6c5ac7e.mp4?alt=media&token=0ef71233-be1e-4224-8320-72173e7385dd" 
                  controls 
@@ -312,7 +341,7 @@
         <h5 class="mt-3 reveal-text text-center">Melodies: Father and Daughter (Keep it Gaza Forever🔥🔥)</h5>
       </div>
       
-      <div class="col-md-6">
+      <div class="col-md-6 video-item">
         <div class="ratio ratio-16x9" style="border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
           <video src="https://firebasestorage.googleapis.com/v0/b/knourneighb.appspot.com/o/Gaza%2F265881201235_status_17b8cafec01a4ad99daf940436feb4b8.mp4?alt=media&token=692d4829-ef37-4e9d-8886-4336b553a078" 
                  controls 
@@ -488,5 +517,45 @@
       }
   });
   </script>
+  <script>
+    // Modified video animation script with individual observers
+    function setupVideoAnimations() {
+        const videoItems = document.querySelectorAll('.video-item');
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.5 // Trigger when 50% visible
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const video = entry.target;
+                if (entry.isIntersecting) {
+                    video.dataset.lastVisible = "true";
+                    video.style.opacity = '1';
+                    video.style.transform = 'scale(1) rotate(0deg)';
+                } else {
+                    if (video.dataset.lastVisible === "true") {
+                        video.dataset.lastVisible = "false";
+                        video.style.opacity = '0';
+                        video.style.transform = 'scale(0) rotate(720deg)';
+                    }
+                }
+            });
+        }, observerOptions);
+
+        videoItems.forEach(video => {
+            // Initialize state
+            video.style.opacity = '0';
+            video.style.transform = 'scale(0) rotate(720deg)';
+            observer.observe(video);
+        });
+    }
+
+    // Initialize video animations
+    window.addEventListener('load', setupVideoAnimations);
+</script>
+
+
 </body>
 </html>
